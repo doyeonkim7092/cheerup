@@ -1,6 +1,6 @@
-import { Model, DataTypes } from "sequelize";
-import { dbType } from "./index";
-import { sequelize } from "./sequelize";
+const { Model, DataTypes } = require("sequelize");
+const { dbType } = require("./index");
+const { sequelize } = require("./sequelize");
 
 class User extends Model {
   public id!: number;
@@ -13,7 +13,6 @@ class User extends Model {
   public interest!: string;
   // public cheering!: number;
   public alarm!: number;
-
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -43,6 +42,7 @@ User.init(
     },
     birthday: {
       type: new DataTypes.DATE(),
+      allowNull: false,
     },
     sex: {
       type: new DataTypes.STRING(),
@@ -70,6 +70,6 @@ User.init(
   }
 );
 
-export const associate = (db: dbType) => {};
+export const associate = (db: any) => {};
 
 export default User;

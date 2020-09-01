@@ -1,10 +1,11 @@
-const { user } = require("../models");
+const db = require("../models");
 const crypto = require("crypto");
 const { request } = require("http");
 const { response } = require("express");
+const { reject, resolve } = require("bluebird");
 
 module.exports = {
-  join: async (request, response) => {
+  join: (request, response) => {
     const {
       userId,
       userPassword,
@@ -14,42 +15,66 @@ module.exports = {
       interest,
     } = request.body;
 
-    try {
-      const salt = "cheer";
-      const key = crypto
-        .createHmac("sha256", salt)
-        .update(userPassword)
-        .digest("hex");
+    const salt = "cheer";
+    const key = crypto
+      .createHmac("sha256", salt)
+      .update(userPassword)
+      .digest("hex");
 
-      const [user, created] = await user.findOrCreate({
-        where: {
-          userId: userId,
-        },
-        defaults: {
-          userPassword: key,
-          userName,
-          birthday,
-          sex,
-          interest,
-        },
+    User.findOrCreate({
+      where: {
+        userId: userId,
+      },
+      defaults: {
+        userPassword: key,
+        userName,
+        birthday,
+        sex,
+        interest,
+      },
+    })
+      .then(async ([User, created]) => {
+        if (!created) {
+          response.status(409).send("회원가입실패");
+        } else {
+          const data = await User.get({ plain: true });
+          response.status(200).json(data);
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+        response.status(500);
       });
-      response.status(200).json("가입되었습니다");
-    } catch (error) {
-      console.log(error);
-      response.status(409).json("회원가입 실패");
-    }
   },
   login: async (request, response) => {
     const { userId, userPassword } = request.body;
 
     try {
+      const token = jwt.sign(
+        {
+          userId,
+        },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "30m",
+        }
+        // (error, token) => {
+        //   if (error) {
+        //     reject(error);
+        //   } else {
+        //     resolve(token);
+        //   }
+        // }
+      );
+
       await user.findOne({
         where: {
           userId,
           userPassword,
         },
       });
-      response.status(200).json("로그인 되었습니다.");
+
+      response.status(200).json({ message: "로그인되었습니다.", token: token });
     } catch (error) {
       console.log(error);
       response.status(404).json("로그인 실패");
