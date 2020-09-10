@@ -1,8 +1,6 @@
 const jwt = require("jsonwebtoken");
 
 module.exports = async function authMiddleware(request, response) {
-  const token = req.headers["x-access-token"] || request.query.token;
-
   const token = request.headers["x-access-token"] || request.query.token;
 
   const auth = await new Promise((resolve, reject) => {
