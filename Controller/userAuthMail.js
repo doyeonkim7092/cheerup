@@ -9,15 +9,14 @@ const crypto = require("crypto");
 
 function sendPasswordResetMail(mailOptions) {
   const mailConfig = {
-    service: "Naver",
-    host: "smtp.naver.com",
-    port: 587,
+    service: "Daum",
+    host: "smtp.daum.net",
+    port: 465,
     auth: {
-      user: "sirblaue@naver.com",
+      user: process.env.EMAIL,
       pass: process.env.PASSWORD,
     },
   };
-
   let transporter = nodemailer.createTransport(mailConfig);
   transporter.sendMail(mailOptions);
 }
@@ -30,7 +29,6 @@ module.exports = {
       if (emailaddress === "") {
         response.status(400).json("이메일을 입력해주세요.");
       }
-
       const userWantPassword = await User.findOne({
         where: { userId: emailaddress },
       });
@@ -39,8 +37,8 @@ module.exports = {
           id: emailaddress,
         },
         process.env.SECRET,
-        { expiresIn: "1h" }
-      ); // 안전을 위해 한시간으로 설정함
+        { expiresIn: "7d" }
+      ); // **배포시느에ㅡ안전을 위해 한시간으로 설정함
 
       const tokenEncrypted = crypto
         .createHash("sha256")
@@ -59,18 +57,17 @@ module.exports = {
           },
         }
       );
-
       if (tokenToTable) {
-        //토큰이 생성되었으면 이메일을 보낼 것임
         const host = request.headers.host;
+        //Verf yingToken 테이블에 넣어둘것임 : 예전에 회원가입때 썼던 곳
 
         let messageWithToken = {
-          from: "sirblaue@naver.com",
+          from: process.env.EMAIL,
           to: emailaddress,
           subject: "비밀번호 변경을 위한 인증요청 메일입니다.",
           html:
             "" +
-            `<div><h1>안녕하세요<h1><a herf="http://${host}/resetPassword/${tokenEncrypted}"><p>클릭하시면 비밀번호 변경페이지로 이동합니다. </p></a><div>`,
+            `<div><h1>안녕하세요<h1><a href="http://${host}/resetPassword/${tokenEncrypted}"><p>클릭하시면 비밀번호 변경페이지로 이동합니다. </p></a><div>`,
         };
         sendPasswordResetMail(messageWithToken);
         response.status(200).json({
