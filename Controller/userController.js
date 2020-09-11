@@ -3,6 +3,8 @@ const { VerifyingToken } = require("../models");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
+const dotenv = require("dotenv");
+dotenv.config();
 
 function sendJoinMail(mailOptions) {
   const mailConfig = {
@@ -241,6 +243,23 @@ module.exports = {
     } catch (error) {
       console.log(error);
       response.status(404).json("추가정보입력실패");
+    }
+  },
+  getid: (request, response) => {
+    const token = request.headers.authorization;
+    try {
+      const verify = jwt.verify(token, process.env.SECRET);
+      const { _id } = verify;
+      const user = User.findOne({
+        where: {
+          userId: _id,
+        },
+      }).then((result) => {
+        response.status(200).json(result.id);
+      });
+    } catch (error) {
+      console.log(error);
+      response.status(404).json("id요청실패");
     }
   },
 };

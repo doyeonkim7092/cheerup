@@ -10,4 +10,6 @@ router.post("/check", userController.check);
 
 router.post("/logout", userController.logout);
 //router.post("/joinout", userController.joinOut);
+router.get("/getid", userController.getid);
+
 module.exports = router;
