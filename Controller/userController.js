@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
-dotenv.config();
+// dotenv.config();
 
 function sendJoinMail(mailOptions) {
   const mailConfig = {

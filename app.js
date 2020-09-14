@@ -3,6 +3,9 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const app = express();
 
+//asdf
+const webSocket = require("./socket");
+
 const port = process.env.PORT || 5000;
 
 const user = require("./routers/auth/user");
@@ -26,6 +29,8 @@ app.use("/comment", comment);
 
 app.set("jwt-secret", process.env.SECRET);
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log("app start", port);
 });
+
+webSocket(server);
