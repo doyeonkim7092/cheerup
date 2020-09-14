@@ -73,7 +73,7 @@ module.exports = {
 
         html:
           "" +
-          `<div><h1>안녕하세요<h1><a href ="http://${host}/confirmemail/${tokenForSignUp}" ><p>클릭하시면 이메일 인증 페이지로 이동합니다.</p></a> <div>`,
+          `<div><h1>안녕하세요<h1><a href ="http://${host}/mail/confirmemail/${tokenForSignUp}" ><p>클릭하시면 이메일 인증 페이지로 이동합니다.</p></a> <div>`,
       };
       //
       //http://localhost:5000/asdjfoaidjfadf
@@ -245,7 +245,8 @@ module.exports = {
       response.status(404).json("추가정보입력실패");
     }
   },
-  getid: (request, response) => {
+  ////////////////USE THIS
+  getid: async (request, response) => {
     const token = request.headers.authorization;
     try {
       const verify = jwt.verify(token, process.env.SECRET);
@@ -255,11 +256,11 @@ module.exports = {
           userId: _id,
         },
       }).then((result) => {
+        console.log(result);
         response.status(200).json(result.id);
       });
     } catch (error) {
       console.log(error);
-      response.status(404).json("id요청실패");
     }
   },
 };

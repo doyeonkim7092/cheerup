@@ -13,7 +13,7 @@ module.exports = {
   create: async (request, response) => {
     const iocheck = response.io;
     console.log("req", request.socket);
-    console.log("res", request.socket.res);
+
     const token = request.headers.authorization;
     const { text, D_day } = request.body;
     try {
@@ -30,7 +30,7 @@ module.exports = {
         text: text,
         D_day: D_day,
       }).then((result) => {
-        response.status(200).json(result);
+        response.status(200).json(result.dataValues);
       });
     } catch (error) {
       console.log(error);

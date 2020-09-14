@@ -2,9 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const app = express();
-
-//asdf
-const webSocket = require("./socket");
+const server = require("http").Server(app);
+const io = require("socket.io")(server);
 
 const port = process.env.PORT || 5000;
 
@@ -14,6 +13,7 @@ const mail = require("./routers/auth/mail");
 
 const comment = require("./routers/auth/comment");
 const { request } = require("express");
+const { isObject } = require("util");
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -29,8 +29,15 @@ app.use("/comment", comment);
 
 app.set("jwt-secret", process.env.SECRET);
 
-const server = app.listen(port, () => {
+server.listen(port, () => {
   console.log("app start", port);
 });
 
-webSocket(server);
+io.on("connection", function (socket) {
+  socket.emit("news", { hello: "world" });
+  socket.on("my other event", function (data) {
+    console.log("otherEvent", data);
+  });
+});
+
+// webSocket(server);
