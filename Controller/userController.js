@@ -73,7 +73,7 @@ module.exports = {
 
         html:
           "" +
-          `<div><h1>안녕하세요<h1><a href ="http://${host}/mail/confirmemail/${tokenForSignUp}" ><p>클릭하시면 이메일 인증 페이지로 이동합니다.</p></a> <div>`,
+          `<div><h1>안녕하세요<h1><a href ="http://${host}/mail/confirmemail/?x-access-join-token=${tokenForSignUp}" ><p>클릭하시면 이메일 인증 페이지로 이동합니다.</p></a> <div>`,
       };
       //
       //http://localhost:5000/asdjfoaidjfadf
@@ -97,7 +97,11 @@ module.exports = {
   },
   confirmMail: async (request, response) => {
     try {
-      const tokenSent = request.headers["x-access-join-token"];
+      const url = request.url;
+      let GetTokenFromUrl = url.split("=");
+
+      const tokenSent = GetTokenFromUrl[1];
+      console.log(tokenSent, "파라미터");
       let verify = jwt.verify(tokenSent, process.env.SECRET);
       verify = verify._id;
 
