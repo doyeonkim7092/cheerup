@@ -120,9 +120,18 @@ module.exports = {
           });
         }
       }
+<<<<<<< HEAD
     } catch (e) {
       console.log(e);
       response.status(402).json({ message: "비밀번호 번경 실패" });
     }
   },
 };
+=======
+    } catch(e){
+
+      response.status(402).json({ message: "비밀번호 번경 실패" });
+    }
+  }
+};
+>>>>>>> 35bf51323aa2f0777b98d069bb93f9d57218e0af

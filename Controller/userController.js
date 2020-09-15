@@ -82,7 +82,6 @@ module.exports = {
         response.status(403).json({ messasge: "회원이 이미 있음" });
       } else if (isCreatedToken) {
         sendJoinMail(messageWithToken);
-
         response.status(200).json({
           message: "mail send  mail 인증부탁드립니다.",
           token: token.dataValues.token, //이건 배포시 삭제해야함.
@@ -97,11 +96,19 @@ module.exports = {
   },
   confirmMail: async (request, response) => {
     try {
+<<<<<<< HEAD
       const url = request.body.url;
       let GetTokenFromUrl = url.split("=");
 
       const tokenSent = GetTokenFromUrl[1];
       console.log(tokenSent, "파라미터");
+=======
+      const url = request.body.url // host/mail/confirmmail/?token=param~~ 
+      let GetTokenFromUrl = url.split("="); //parameter
+      const tokenSent = GetTokenFromUrl[1];
+
+      console.log(tokenSent, "파라미터")
+>>>>>>> 35bf51323aa2f0777b98d069bb93f9d57218e0af
       let verify = jwt.verify(tokenSent, process.env.SECRET);
       verify = verify._id;
 
@@ -237,6 +244,7 @@ module.exports = {
             age,
             gender,
             interest,
+
           });
           console.log(result);
           response.status(200).json(result);
@@ -268,3 +276,4 @@ module.exports = {
     }
   },
 };
+
