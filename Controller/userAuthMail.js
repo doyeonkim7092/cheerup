@@ -120,8 +120,9 @@ module.exports = {
           });
         }
       }
-    } catch {
+    } catch (e) {
+      console.log(e);
       response.status(402).json({ message: "비밀번호 번경 실패" });
     }
-  }
+  },
 };

@@ -3,6 +3,7 @@ const { request } = require("http");
 const jwt = require("jsonwebtoken");
 const user = require("../models/user");
 const dotenv = require("dotenv");
+const io = require("socket.io")();
 const Sequelize = require("sequelize");
 const sequelize = require("sequelize");
 const { group } = require("console");
@@ -11,8 +12,8 @@ dotenv.config();
 module.exports = {
   //header에 담긴 유저정보를 해독 후, 그 유저정보와 일치하는 카드 생성.
   create: async (request, response) => {
-    const iocheck = response.io;
-    console.log("req", request.socket);
+    const iocheck = io;
+    console.log("req", iocheck);
 
     const token = request.headers.authorization;
     const { text, D_day } = request.body;

@@ -97,7 +97,7 @@ module.exports = {
   },
   confirmMail: async (request, response) => {
     try {
-      const url = request.url;
+      const url = request.body.url;
       let GetTokenFromUrl = url.split("=");
 
       const tokenSent = GetTokenFromUrl[1];
