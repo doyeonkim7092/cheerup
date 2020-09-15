@@ -1,9 +1,8 @@
 const nodemailer = require("nodemailer");
 const { User } = require("../models");
 const { VerifyingToken } = require("../models");
-const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");;
 const crypto = require("crypto");
-
 //인증을 위한 토큰 생성하기
 //이메일을 입력하고,
 
@@ -67,7 +66,7 @@ module.exports = {
           subject: "비밀번호 변경을 위한 인증요청 메일입니다.",
           html:
             "" +
-            `<div><h1>안녕하세요<h1><a href="http://${host}/mail/resetpassword/?x-access-reset-token=${tokenEncrypted}"><p>클릭하시면 비밀번호 변경페이지로 이동합니다. </p></a><div>`,
+            `<div><h1>안녕하세요<h1><a href="http://${host}/mail/isvalidtoken/?x-access-reset-token=${tokenEncrypted}"><p>클릭하시면 비밀번호 변경페이지로 이동합니다. </p></a><div>`,
         };
         sendPasswordResetMail(messageWithToken);
         response.status(200).json({
@@ -80,9 +79,27 @@ module.exports = {
     } catch (err) {
       response.status(401).json({ message: "이메일 인증 실패." });
     }
-  },
-  resetPassword: async (request, response) => {
+  },//토큰인증확인 로직 따로 구현하기
+  tokenconfirmed: async (request, response)=>{
+
     const tokenreceived = request.url.split("=")[1];
+
+    
+    const isMatchToken = await VerifyingToken.findOne({
+      where: {
+        token: tokenreceived,
+      },
+    });
+
+    if (!isMatchToken) {
+      response.status(404).json("인증을 다시 받으시오");
+    } else {
+      response.status(200).json({message: "인증완료", token: tokenreceived}) 
+    }
+  }
+  ,resetpassword: async (request, response) => {
+    
+    const tokenreceived = request.body.token
     const newPassword = request.body.newPassword;
 
     try {
@@ -107,21 +124,23 @@ module.exports = {
             where: { id: isMatchToken.dataValues.user_Id },
           }
         );
-        console.log(isMatchToken.dataValues.user_Id);
 
-        console.log(chiperedPassword);
         if (getUser) {
           response.status(202).json({
             message: "비밀번호 변경 성공",
           });
         } else {
-          response.status(404).json({
+          response.status(403).json({
             message: "데이터테이블에서 비밀번호 번경 실패",
           });
         }
       }
+<<<<<<< HEAD
     } catch (e) {
       console.log(e);
+=======
+    } catch(e){
+>>>>>>> 4eb73de9fac94ba6ae27de7acf6400c95f857ae3
       response.status(402).json({ message: "비밀번호 번경 실패" });
     }
   },
