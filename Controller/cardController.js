@@ -243,7 +243,7 @@ module.exports = {
         attributes: {
           include: [
             [
-              Sequelize.fn("COUNT", Sequelize.col("Comment.comment_userid")),
+              Sequelize.fn("COUNT", Sequelize.col("Comment.user_id")),
               "EachCommentCount",
             ],
           ],
