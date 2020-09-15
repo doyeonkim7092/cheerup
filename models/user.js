@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
         as: "VerifyingToken",
         sourceKey: "id",
       });
+
     }
   }
   User.init(
