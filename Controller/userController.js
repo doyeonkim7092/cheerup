@@ -2,20 +2,16 @@ const { User } = require("../models");
 const { VerifyingToken } = require("../models");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
-const nodemailer = require("nodemailer");
+const sgMail = require("@sendgrid/mail");
 
-function sendJoinMail(mailOptions) {
-  const mailConfig = {
-    service: "Daum",
-    host: "smtp.daum.net",
-    port: 465,
-    auth: {
-      user: process.env.EMAIL,
-      pass: process.env.PASSWORD,
-    },
-  };
-  let transporter = nodemailer.createTransport(mailConfig);
-  transporter.sendMail(mailOptions);
+ const sendJoinMail = async function(message) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  try{
+  await sgMail.send(message)
+  }catch(e){
+    console.log('sendGrid', e);
+
+  }
 }
 
 module.exports = {
@@ -63,12 +59,11 @@ module.exports = {
       // console.log(data)
 
       const host = request.headers.host;
-
+   
       let messageWithToken = {
-        from: process.env.EMAIL,
         to: userId,
+        from: process.env.EMAIL,
         subject: "이메일인증요청메일입니다.",
-
         html:
           "" +
           `<div><h1>안녕하세요<h1><a href ="http://${host}/mail/confirmmail/?x-access-join-token=${tokenForSignUp}" ><p>클릭하시면 이메일 인증 페이지로 이동합니다.</p></a> <div>`,
@@ -81,6 +76,7 @@ module.exports = {
       } else if (isCreatedToken) {
         sendJoinMail(messageWithToken);
         console.log('send', messageWithToken)
+
 
         response.status(200).json({
           message: "mail send  mail 인증부탁드립니다.",
@@ -99,7 +95,6 @@ module.exports = {
       const url = request.body.url // host/mail/confirmmail/?token=param~~ 
       let GetTokenFromUrl = url.split("="); //parameter
       const tokenSent = GetTokenFromUrl[1];
-
       console.log(tokenSent, "파라미터")
       let verify = jwt.verify(tokenSent, process.env.SECRET);
       verify = verify._id;
@@ -239,7 +234,6 @@ module.exports = {
 
       console.log(user);
       response.status(202).json({message: "입력성공", result: user});
-      
 
     } catch (error) {
       console.log(error);
@@ -247,4 +241,3 @@ module.exports = {
     }
   },
 };
-
