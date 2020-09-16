@@ -37,6 +37,7 @@ module.exports = {
       response.send(404).json("wrong request");
     }
   },
+
   // GET
   get: async (request, response) => {
     const query = request.query;
@@ -99,9 +100,11 @@ module.exports = {
     const { card_id, comment_id } = request.body;
 
     try {
-      const user = await User.findOne({
-        where: { userId: _id },
-      });
+      // const verify = jwt.verify(token, process.env.SECRET);
+      // const { _id } = verify;
+      // const user = await User.findOne({
+      //   where: { userId: _id },
+      // });
       const comment = await Comment.destroy({
         where: {
           card_id: card_id,

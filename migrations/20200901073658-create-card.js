@@ -19,6 +19,9 @@ module.exports = {
         type: Sequelize.INTEGER,
         defaultValue: 0,
       },
+      review: {
+        type: Sequelize.STRING,
+      },
       done: {
         type: Sequelize.BOOLEAN,
       },

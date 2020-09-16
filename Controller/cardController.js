@@ -12,9 +12,6 @@ dotenv.config();
 module.exports = {
   //header에 담긴 유저정보를 해독 후, 그 유저정보와 일치하는 카드 생성.
   create: async (request, response) => {
-    const iocheck = io;
-    console.log("req", iocheck);
-
     const token = request.headers.authorization;
     const { text, D_day } = request.body;
     try {
@@ -264,6 +261,67 @@ module.exports = {
         console.log(count);
 
         response.status(200).json(count);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  //ㄹㅣ뷰작성. update에서 text를 update한 방식으로 작성
+  reviewUpdate: async (request, response) => {
+    const token = request.headers.authorization;
+    const { review, id } = request.body;
+    console.log("body", request.body);
+    try {
+      const verify = jwt.verify(token, process.env.SECRET);
+      const { _id } = verify;
+
+      const user = await User.findOne({
+        where: { userId: _id },
+      });
+      const card = await Card.findOne({
+        where: {
+          user_Id: user.dataValues.id,
+          id: id,
+        },
+      }).then((result) => {
+        //결과 값을 request.body로 받아온 review로, 기존 작성된 review를 수정 후 Response로 전송
+        if (result) {
+          result.update({
+            review: review,
+          });
+          console.log(result);
+          response.status(200).json(result.review);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+      response.status(404).json("wrong req");
+    }
+  },
+  //review를 받는다
+  getReview: async (request, response) => {
+    const token = request.headers.authorization;
+    const query = request.query;
+    try {
+      const verify = jwt.verify(token, process.env.SECRET);
+      const { _id } = verify;
+
+      const user = await User.findOne({
+        where: { userId: _id },
+      });
+
+      const card = await Card.findOne({
+        where: {
+          user_Id: user.dataValues.id,
+          id: query.id,
+        },
+        attributes: ["review"],
+      }).then((result) => {
+        if (result) {
+          response.status(200).json(result);
+        } else {
+          response.status(404).json("본인의 후기를 요청해주세요");
+        }
       });
     } catch (error) {
       console.log(error);

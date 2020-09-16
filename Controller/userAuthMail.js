@@ -1,7 +1,7 @@
 const nodemailer = require("nodemailer");
 const { User } = require("../models");
 const { VerifyingToken } = require("../models");
-const jwt = require("jsonwebtoken");;
+const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 //인증을 위한 토큰 생성하기
 //이메일을 입력하고,
@@ -79,12 +79,10 @@ module.exports = {
     } catch (err) {
       response.status(401).json({ message: "이메일 인증 실패." });
     }
-  },//토큰인증확인 로직 따로 구현하기
-  tokenconfirmed: async (request, response)=>{
-
+  }, //토큰인증확인 로직 따로 구현하기
+  tokenconfirmed: async (request, response) => {
     const tokenreceived = request.url.split("=")[1];
 
-    
     const isMatchToken = await VerifyingToken.findOne({
       where: {
         token: tokenreceived,
@@ -94,12 +92,11 @@ module.exports = {
     if (!isMatchToken) {
       response.status(404).json("인증을 다시 받으시오");
     } else {
-      response.status(200).json({message: "인증완료", token: tokenreceived}) 
+      response.status(200).json({ message: "인증완료", token: tokenreceived });
     }
-  }
-  ,resetpassword: async (request, response) => {
-    
-    const tokenreceived = request.body.token
+  },
+  resetpassword: async (request, response) => {
+    const tokenreceived = request.body.token;
     const newPassword = request.body.newPassword;
 
     try {
@@ -135,12 +132,7 @@ module.exports = {
           });
         }
       }
-<<<<<<< HEAD
     } catch (e) {
-      console.log(e);
-=======
-    } catch(e){
->>>>>>> 4eb73de9fac94ba6ae27de7acf6400c95f857ae3
       response.status(402).json({ message: "비밀번호 번경 실패" });
     }
   },

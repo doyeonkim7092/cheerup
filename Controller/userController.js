@@ -82,7 +82,7 @@ module.exports = {
         response.status(403).json({ messasge: "회원이 이미 있음" });
       } else if (isCreatedToken) {
         sendJoinMail(messageWithToken);
-        console.log('send', messageWithToken)
+        console.log("send", messageWithToken);
 
         response.status(200).json({
           message: "mail send  mail 인증부탁드립니다.",
@@ -228,36 +228,21 @@ module.exports = {
     try {
       const verify = jwt.verify(token, process.env.SECRET);
       const { _id } = verify;
-      const user = await User.update({
-        age,
-        gender,
-        interest
-      },{
-        where: {
-          userId: _id,
+      const user = await User.update(
+        {
+          age,
+          gender,
+          interest,
         },
-<<<<<<< HEAD
-      }).then((result) => {
-        if (result) {
-          result.update({
-            age,
-            gender,
-            interest,
-          });
-          console.log(result);
-          response.status(200).json(result);
+        {
+          where: {
+            userId: _id,
+          },
         }
-      });
-      console.log(result);
-      response.status(200).json(result);
-=======
-      })
+      );
 
       console.log(user);
-      response.status(202).json({message: "입력성공", result: user});
-      
-
->>>>>>> 4eb73de9fac94ba6ae27de7acf6400c95f857ae3
+      response.status(202).json({ message: "입력성공", result: user });
     } catch (error) {
       console.log(error);
       response.status(400).json("추가정보입력실패");

@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
       text: DataTypes.STRING,
       tags: DataTypes.STRING,
       cheered: DataTypes.INTEGER,
+      review: DataTypes.STRING,
       done: DataTypes.BOOLEAN,
       DLC: DataTypes.STRING,
       D_day: DataTypes.DATEONLY,
