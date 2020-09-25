@@ -7,6 +7,10 @@ const io = require("socket.io")();
 const Sequelize = require("sequelize");
 const sequelize = require("sequelize");
 const { group } = require("console");
+// import moment from "moment";
+const moment = require("moment");
+moment().format("YYYY-MM-DD");
+const Op = Sequelize.Op;
 dotenv.config();
 
 module.exports = {
@@ -123,10 +127,25 @@ module.exports = {
 
   //모든 카드를 메인페이지에 렌더하기 위한 getAll
   getAll: async (request, response) => {
+    // const limit = parseInt(request.query.limit);
+    const page = parseInt(request.query.page);
+
+    const startIndex = (page - 1) * 5;
+    const offset = page * 5;
+
     try {
-      const card = await Card.findAll({
+      const card = await Card.findAndCountAll({
+        limit: 5,
+        page,
+        offset,
+        where: {
+          D_day: {
+            [Op.gte]: moment().toDate(),
+          },
+        },
         order: [["createdAt", "DESC"]],
       }).then((result) => {
+        console.log(result);
         response.status(200).json(result);
       });
     } catch (e) {
@@ -330,3 +349,8 @@ module.exports = {
 };
 
 //CARD_CRUD 완료
+
+// const card = await Card.findOne({review :text}, {where:
+//   {user_Id: user.dataValues.id,
+//   id: id,}
+// })

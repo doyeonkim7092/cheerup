@@ -2,23 +2,16 @@ const { User } = require("../models");
 const { VerifyingToken } = require("../models");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
-const nodemailer = require("nodemailer");
-const dotenv = require("dotenv");
-// dotenv.config();
+const sgMail = require("@sendgrid/mail");
 
-function sendJoinMail(mailOptions) {
-  const mailConfig = {
-    service: "Daum",
-    host: "smtp.daum.net",
-    port: 465,
-    auth: {
-      user: process.env.EMAIL,
-      pass: process.env.PASSWORD,
-    },
-  };
-  let transporter = nodemailer.createTransport(mailConfig);
-  transporter.sendMail(mailOptions);
-}
+const sendJoinMail = async function (message) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  try {
+    await sgMail.send(message);
+  } catch (e) {
+    console.log("sendGrid", e);
+  }
+};
 
 module.exports = {
   join: async (request, response) => {
@@ -67,10 +60,9 @@ module.exports = {
       const host = request.headers.host;
 
       let messageWithToken = {
-        from: process.env.EMAIL,
         to: userId,
+        from: process.env.EMAIL,
         subject: "이메일인증요청메일입니다.",
-
         html:
           "" +
           `<div><h1>안녕하세요<h1><a href ="http://${host}/mail/confirmmail/?x-access-join-token=${tokenForSignUp}" ><p>클릭하시면 이메일 인증 페이지로 이동합니다.</p></a> <div>`,
@@ -98,9 +90,8 @@ module.exports = {
   },
   confirmMail: async (request, response) => {
     try {
-      const url = request.body.url;
-      let GetTokenFromUrl = url.split("=");
-
+      const url = request.body.url; // host/mail/confirmmail/?token=param~~
+      let GetTokenFromUrl = url.split("="); //parameter
       const tokenSent = GetTokenFromUrl[1];
       console.log(tokenSent, "파라미터");
       let verify = jwt.verify(tokenSent, process.env.SECRET);
@@ -261,6 +252,25 @@ module.exports = {
       }).then((result) => {
         console.log(result);
         response.status(200).json(result.id);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  checkName: async (request, response) => {
+    const { userName } = request.body;
+
+    try {
+      const user = User.findOne({
+        where: {
+          userName: userName,
+        },
+      }).then((result) => {
+        if (result === null) {
+          response.status(200).json("사용 가능한 닉네임 입니다");
+        } else {
+          response.status(409).json("이미 사용중인 닉네임 입니다");
+        }
       });
     } catch (error) {
       console.log(error);

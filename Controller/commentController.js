@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const { request, response, text } = require("express");
 const Sequelize = require("sequelize");
 const { group } = require("console");
+const { isObject } = require("util");
 const Op = Sequelize.Op;
 
 dotenv.config();
@@ -14,6 +15,7 @@ module.exports = {
   create: async (request, response) => {
     const { text, id } = request.body;
     const token = request.headers.authorization;
+
     try {
       const verify = jwt.verify(token, process.env.SECRET);
       const { _id } = verify;
